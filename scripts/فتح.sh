@@ -29,6 +29,8 @@ if ! git config user.email >/dev/null 2>&1; then
 fi
 # إعادة التجهيز تُنزل بت التنفيذ عن السكربتات (فارق صفر سطر في git diff).
 chmod +x scripts/*.sh 2>/dev/null || true
+# تتمة ق-٠٠٥ الثانية: ضجيج تغيير الأذونات (100755→100644) يلوّث status بفارق صفر سطر.
+git config core.fileMode false 2>/dev/null || true
 
 git fetch -q origin "$BRANCH" || {
   echo 'تعذر جلب البعيد (شبكة/remote)؛ لا فتح أعمى. صحّح ثم أعد.' >&2

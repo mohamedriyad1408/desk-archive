@@ -35,6 +35,7 @@ if ! git config user.email >/dev/null 2>&1; then
   echo "شفاء: ضُبطت هوية الالتزام المحلية (عيّن CHANNEL_ROLE=ن|م٢|م١ لتمييز دورك)."
 fi
 chmod +x scripts/*.sh 2>/dev/null || true
+git config core.fileMode false 2>/dev/null || true
 
 if ! git fetch -q origin "$BRANCH"; then
   echo 'تعذر جلب البعيد؛ لا ختم بلا معرفة تحركه (امنع الختم الأعمى).' >&2
