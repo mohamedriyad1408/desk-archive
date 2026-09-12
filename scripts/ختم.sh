@@ -19,7 +19,27 @@ if [ ! -d القناة ]; then
 fi
 
 BRANCH="$(git rev-parse --abbrev-ref HEAD)"
-git fetch -q origin "$BRANCH" || true
+
+# ق-٠٠٥: شفاء ذاتي بعد إعادة التجهيز (مطابق لفتح.sh).
+CHANNEL_REPO_URL="${CHANNEL_REPO_URL:-https://github.com/mohamedriyad1408/desk-archive.git}"
+if ! git remote get-url origin >/dev/null 2>&1; then
+  git remote add origin "$CHANNEL_REPO_URL"
+  echo "شفاء: أُعيد ضبط remote origin محليًا ($CHANNEL_REPO_URL)."
+fi
+if ! git config user.email >/dev/null 2>&1; then
+  if [ -n "${CHANNEL_ROLE:-}" ]; then
+    git config user.name "قناة-${CHANNEL_ROLE}"; git config user.email "${CHANNEL_ROLE}@channel.local"
+  else
+    git config user.name "desk-archive channel"; git config user.email "channel@desk-archive.local"
+  fi
+  echo "شفاء: ضُبطت هوية الالتزام المحلية (عيّن CHANNEL_ROLE=ن|م٢|م١ لتمييز دورك)."
+fi
+chmod +x scripts/*.sh 2>/dev/null || true
+
+if ! git fetch -q origin "$BRANCH"; then
+  echo 'تعذر جلب البعيد؛ لا ختم بلا معرفة تحركه (امنع الختم الأعمى).' >&2
+  exit 2
+fi
 behind="$(git rev-list --count HEAD..FETCH_HEAD 2>/dev/null || echo 0)"
 if [ "$behind" -gt 0 ]; then
   echo "ممنوع الختم: البعيد أحدث من نسختك بـ$behind التزامًا (وكيل سبقك بالدفع)." >&2
@@ -39,7 +59,13 @@ out="vault/v-$nn.enc"
 norm() { sed -E 's#^\./##' | sed '/^$/d' | sort; }
 tmp="$(mktemp -d)"
 work="$(mktemp -d)"
-trap 'rm -rf "$tmp" "$work"' EXIT
+trap '
+  rm -rf "$tmp" "$work"
+  if [ "${SEAL_OK:-0}" != 1 ] && [ -n "${out:-}" ] && [ -f "$out" ]; then
+    rm -f "$out"
+    echo "نظّف حجما يتيما بعد فشل الختم: $out (أعد الختم بعد الاستدراك)." >&2
+  fi
+' EXIT
 
 if [ -n "$last" ]; then
   latestv="$(printf 'vault/v-%03d.enc' "$((10#$last))")"
@@ -94,14 +120,20 @@ tar -czf - -C القناة . | openssl enc -aes-256-cbc -pbkdf2 -iter 600000 -sa
 bash scripts/فحص.sh
 
 # كل ما في مجلد القناة (ومنه سجل الحذف الموثق) داخل الحجم المشفّر؛ لا يُضاف منه نص مكشوف.
-git add vault
-git commit -q -m "snapshot $nn"
+# ق-٠٠٥: الحجم الجديد وحده يُضاف — فلا يُكنَس حجم يتيم سابق فيُدفَن تحت رقم تالٍ.
+git add "$out"
+git commit -q -m "snapshot $nn" || {
+  echo 'فشل الالتزام (تحقق من هوية جيت/الحالة المحلية)؛ حُجِم أي يتيم بالتنظيف التلقائي.' >&2
+  exit 1
+}
 
 if ! git push origin HEAD 2>&1 | sed 's#//[^@]*@#//***@#g'; then
   echo 'ممنوع: فشل الدفع (سباق في اللحظة الأخيرة على الأرجح). يُتراجَع هذا الحجم المحلي.' >&2
+  SEAL_OK=0
   git reset -q --mixed HEAD~1
   rm -f "$out"
   echo 'استدرك: bash scripts/فتح.sh ثم bash scripts/ختم.sh.' >&2
   exit 3
 fi
+SEAL_OK=1
 echo "خُتم ودُفع الحجم: $out"

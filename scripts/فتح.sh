@@ -12,7 +12,28 @@ if [ -z "${MIFTAH:-}" ]; then
 fi
 
 BRANCH="$(git rev-parse --abbrev-ref HEAD)"
-git fetch -q origin "$BRANCH"
+
+# ق-٠٠٥: شفاء ذاتي بعد إعادة تجهيز المساحة (origin/الهوية/بت التنفيذ قد تزول).
+CHANNEL_REPO_URL="${CHANNEL_REPO_URL:-https://github.com/mohamedriyad1408/desk-archive.git}"
+if ! git remote get-url origin >/dev/null 2>&1; then
+  git remote add origin "$CHANNEL_REPO_URL"
+  echo "شفاء: أُعيد ضبط remote origin محليًا ($CHANNEL_REPO_URL)."
+fi
+if ! git config user.email >/dev/null 2>&1; then
+  if [ -n "${CHANNEL_ROLE:-}" ]; then
+    git config user.name "قناة-${CHANNEL_ROLE}"; git config user.email "${CHANNEL_ROLE}@channel.local"
+  else
+    git config user.name "desk-archive channel"; git config user.email "channel@desk-archive.local"
+  fi
+  echo "شفاء: ضُبطت هوية الالتزام المحلية (عيّن CHANNEL_ROLE=ن|م٢|م١ لتمييز دورك)."
+fi
+# إعادة التجهيز تُنزل بت التنفيذ عن السكربتات (فارق صفر سطر في git diff).
+chmod +x scripts/*.sh 2>/dev/null || true
+
+git fetch -q origin "$BRANCH" || {
+  echo 'تعذر جلب البعيد (شبكة/remote)؛ لا فتح أعمى. صحّح ثم أعد.' >&2
+  exit 1
+}
 if ! git merge --ff-only -q FETCH_HEAD 2>/dev/null; then
   echo 'تحذير: تعذر تحديث النسخة المحلية سريعًا (تعديل محلي على ملفات متتبعة؟).' >&2
   echo 'صحّح وضع جيت المحلي، ثم أعد فتح.sh. لا تختِم على نسخة قديمة.' >&2
