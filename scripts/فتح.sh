@@ -42,10 +42,25 @@ if ! git merge --ff-only -q FETCH_HEAD 2>/dev/null; then
   exit 1
 fi
 
-latest="$(ls -1 vault/v-*.enc 2>/dev/null | sort | tail -n 1 || true)"
+# ق-٠٠٧/ب: الرقم ليس زمنًا — الأحدث التزامًا هو الحكم، والأعلى رقمًا يُفتح فقط عند التساوي.
+# تعادل الطوابع يحسم للأعلى رقمًا (ختمان في الثانية نفسها واردان).
+latest_by_time() {
+  local f ct best=0 best_f=""
+  while IFS= read -r f; do
+    ct="$(git log -1 --format=%ct -- "$f" 2>/dev/null || echo 0)"
+    if [ "${ct:-0}" -ge "$best" ] && [ "${ct:-0}" -gt 0 ]; then best="$ct"; best_f="$f"; fi
+  done < <(ls -1 vault/v-*.enc 2>/dev/null | sort)
+  [ -n "$best_f" ] && { echo "$best_f"; return 0; }
+  return 1
+}
+latest="$(latest_by_time)"
 if [ -z "$latest" ]; then
   echo 'لا توجد أحجام مشفّرة بعد؛ شغّل ختم.sh بعد تهيئة مجلد القناة.' >&2
   exit 1
+fi
+highest="$(ls -1 vault/v-*.enc 2>/dev/null | sort | tail -n 1)"
+if [ "$latest" != "$highest" ]; then
+  echo "تنبيه ق-٠٠٧: الأعلى رقمًا ($highest) ليس الأحدث زمنًا؛ فتحتُ الأحدث التزامًا: $latest" >&2
 fi
 
 tmp="$(mktemp -d)"

@@ -116,10 +116,29 @@ latest_file() { local pfx="$1"
 
 board_has_card() { grep -Pq "^$2\t$1\t" "$BOARD" 2>/dev/null; }
 
-board_add() { # $1=دور $2=بطاقة $3=مدة دقيقة
+norm_card() { # $1=دور $2=بطاقة ⇒ «دور-NNN» بأرقام غربية ثلاثية (ق-٠٠٦/أ: معرّف موحّد).
+  local role="$1" card="$2" pfx
+  pfx="$(role_prefix "$role")"
+  if [[ "$card" =~ ^[0-9]{3}$ ]]; then
+    echo "${pfx}-${card}"
+  elif [[ "$card" == "${pfx}-"[0-9]{3} ]]; then
+    echo "$card"
+  else
+    echo "خطأ: معرّف البطاقة يجب أن يكون ثلاثية غربية أو «${pfx}-NNN» (ق-٠٠٦): $card" >&2
+    exit 2
+  fi
+}
+
+board_add() { # $1=دور $2=بطاقة $3=مدة دقيقة — يستبدل خط الدور كله (ق-٠٠٦/ب: مفتاح الدور لا الدور×المعرّف)
   ensure_dir
-  board_has_card "$1" "$2" && return 0
+  local replaced=""
+  if [ -f "$BOARD" ]; then
+    grep -vP "\t$1\t[0-9]+\t[0-9]+\$" "$BOARD" > "$BOARD.tmp" || true
+    if ! cmp -s "$BOARD" "$BOARD.tmp"; then replaced=" (استُبدل خط الدور السابق — ق-٠٠٦)"; fi
+    mv "$BOARD.tmp" "$BOARD"
+  fi
   printf '%s\t%s\t%s\t%s\n' "$2" "$1" "$(date -u +%s)" "$3" >> "$BOARD"
+  [ -n "$replaced" ] && echo "تنبيه: كان للدور $1 خط آخر في المناوبة$replaced" >&2 || true
 }
 
 board_remove_role() { # يشطب كل بطائق الدور (التسليم/الإيقاف).
@@ -187,6 +206,7 @@ case "$cmd" in
   بطاقة)
     role="${1:?}"; card="${2:?}"; mins="${3:?}"
     role_prefix "$role" >/dev/null
+    card="$(norm_card "$role" "$card")"
     ( with_lock; sync_pulse_tree; ensure_dir
       board_add "$role" "$card" "$mins"
       pulse_commit "pulse: بطاقة $card لـ$role" ) && echo "فُتحت البطاقة $card ($role، $mins دقيقة) في المناوبة." ;;
@@ -194,6 +214,7 @@ case "$cmd" in
   سلّح)
     role="${1:?}"; card="${2:?}"; mins="${3:?}"
     role_prefix "$role" >/dev/null
+    card="$(norm_card "$role" "$card")"
     pidf=".pulse-pid-$role"
     if heart_alive "$pidf"; then echo "قلب $role حيٌّ أصلًا (pid $(cat "$pidf"))؛ استخدم: تابع $role." >&2; exit 1; fi
     ( with_lock; sync_pulse_tree; ensure_dir
