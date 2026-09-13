@@ -41,6 +41,18 @@ fi
 chmod +x scripts/*.sh 2>/dev/null || true
 git config core.fileMode false 2>/dev/null || true
 
+# دفع باصطحاب التوكن من متغير البيئة عند الحاجة، ثم إعادة العنوان العام (التوكن لا يُكتب في ملف).
+auth_push() {
+  local url; url="$(git remote get-url origin)"
+  if [[ "$url" == *"@"* ]]; then git push "$@"; return; fi
+  if [ -n "${CHANNEL_TOKEN:-}" ]; then
+    git remote set-url origin "https://x-access-token:${CHANNEL_TOKEN}@github.com/mohamedriyad1408/desk-archive.git"
+    if git push "$@"; then git remote set-url origin "$url"; return 0; fi
+    git remote set-url origin "$url"; return 1
+  fi
+  git push "$@"
+}
+
 if ! git fetch -q origin "$BRANCH"; then
   echo 'تعذر جلب البعيد؛ لا ختم بلا معرفة تحركه (امنع الختم الأعمى).' >&2
   exit 2
@@ -265,7 +277,7 @@ while :; do
     fi
   fi
 
-  if git push -q origin HEAD 2>/dev/null; then
+  if auth_push -q origin HEAD 2>/dev/null; then
     SEAL_OK=1
     echo "خُتم ودُفع الحجم: $out"
     break
