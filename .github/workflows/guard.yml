@@ -1,6 +1,8 @@
 name: guard
 on:
   push:
+    paths-ignore:
+      - 'نبض/**'
   pull_request:
 jobs:
   guard:

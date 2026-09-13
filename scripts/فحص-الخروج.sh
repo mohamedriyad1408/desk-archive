@@ -59,21 +59,22 @@ check_ward 'واردة-المستشار-الأول' 'واردة المستشار
 
 # [٣] قفل المراقب الحي: لا إقرار خروج لدور ومراقبه ما زال مسلّحًا.
 # الصيغة: فحص-الخروج.sh [ن|م٢|م١] · م١ في قفله الأخير يفحص الثلاثة.
-echo '[٣] نزع سلاح المراقب الحي:'
+echo '[٣] نزع سلاح المراقب الحي (العين انتظر.sh والقلب نبض.sh):'
 check_watch() {
-  local r="$1" pf pid
-  pf=".watch-pid-$r"
-  if [ -f "$pf" ]; then
-    pid="$(cat "$pf" 2>/dev/null || true)"
-    if [ -n "$pid" ] && kill -0 "$pid" 2>/dev/null; then
-      echo "مراقب حي لـ$r (العملية $pid) — انزع سلاحه قبل الإقرار (أوقف انتظر.sh واحذف $pf)." >&2
-      fail=1
-    else
-      rm -f "$pf"; echo "  $r: ملف سلاح قديم لعملية منتهية، نُظّف."
+  local r="$1" pf pp pid weapon armed=0
+  pf=".watch-pid-$r"; pp=".pulse-pid-$r"
+  for weapon in "$pf" "$pp"; do
+    if [ -f "$weapon" ]; then
+      pid="$(cat "$weapon" 2>/dev/null || true)"
+      if [ -n "$pid" ] && kill -0 "$pid" 2>/dev/null; then
+        echo "سلاح حي لـ$r (العملية $pid في $weapon) — انزعه قبل الإقرار: نبض.sh سلمت/أوقف $r يوقف القلب، وأوقف العين، واحذف الملف." >&2
+        fail=1; armed=1
+      else
+        rm -f "$weapon"; echo "  $r: ملف سلاح قديم ($weapon) لعملية منتهية، نُظّف."
+      fi
     fi
-  else
-    echo "  $r: لا مراقب مسلّح."
-  fi
+  done
+  [ "$armed" = 0 ] && [ ! -f "$pf" ] && [ ! -f "$pp" ] && echo "  $r: لا عين ولا قلب مسلّح."
 }
 case "${1:-}" in
   ن)   check_watch 'ن' ;;

@@ -3,7 +3,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-pattern='^(README\.md|حقوق\.md|\.optout|\.ai_exclude|\.gitignore|scripts/[^/]+|\.github/workflows/[^/]+|vault/v-[0-9]+\.enc)$'
+pattern='^(README\.md|حقوق\.md|\.optout|\.ai_exclude|\.gitignore|scripts/[^/]+|\.github/workflows/[^/]+|vault/v-[0-9]+\.enc|نبض/[^/]+\.md)$'
 bad=0
 
 while IFS= read -r f; do
