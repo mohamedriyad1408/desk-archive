@@ -58,17 +58,23 @@ if ! git fetch -q origin "$BRANCH"; then
   exit 2
 fi
 
+# تجسيد أحجام البعيد على القرص (علاج v-255): ملفات العمل قد تكون متخلفة بعد استعادة لقطة.
+git checkout FETCH_HEAD -- vault/ 2>/dev/null || true
+
 norm() { sed -E 's#^\./##' | sed '/^$/d' | sort; }
 extract_volume() { tar -xz -C "$1" 2>/dev/null; }
 
-latest_by_time() { # أحدث حجم بالزمن (ق-٠٠٧/ب: الرقم ليس زمنًا)؛ التعادل للأعلى رقمًا
+latest_by_time() { # علاج v-255 (اقتراح م٢ · تنفيذ م١): الكشف من كائنات git لا من ملفات العمل —
+  # ملفات العمل قد تكون متخلفة بعد استعادة لقطة فيُفتح/يُبنى على حجم قديم ويجتاز الحراس (واقعة v-255).
+  # المرجع HEAD في لحظة النداء: في فتح.sh بعد الدمج = البعيد؛ وفي ختم.sh قبل الدمج = آخر حالتي وبعده = البعيد.
   local f ct best=0 best_f=""
   while IFS= read -r f; do
-    ct="$(git log -1 --format=%ct -- "$f" 2>/dev/null || echo 0)"
+    ct="$(git log -1 --format=%ct HEAD -- "$f" 2>/dev/null || echo 0)"
     if [ "${ct:-0}" -ge "$best" ] && [ "${ct:-0}" -gt 0 ]; then best="$ct"; best_f="$f"; fi
-  done < <(ls -1 vault/v-*.enc 2>/dev/null | sort)
+  done < <(git -c core.quotepath=false ls-tree --name-only HEAD -- vault/ 2>/dev/null | sort)
   echo "$best_f"
 }
+
 tree_max_number() { # أعلى رقم حجم على شجرة معطاة
   git -c core.quotepath=false ls-tree --name-only "${1:-FETCH_HEAD}" -- vault/ 2>/dev/null \
     | sed -nE 's#^vault/v-([0-9]+)\.enc$#\1#p' | sort -n | tail -1
@@ -82,6 +88,28 @@ next_free_number() { # أعلى المحلي والبعيد معًا + ١ (ق-٠
   lv=$((10#${lm:-0})); rv=$((10#${rm_:-0}))
   [ "$lv" -ge "$rv" ] && echo $((lv+1)) || echo $((rv+1))
 }
+
+# ─── حارس النقوش (م١ ج11 — أُعيد بناؤه ديّمًا بعد واقعة الفقد): كل ختم يزيد نقشًا في الحالة نفسها ───
+# يمنع تجزئة السجل في ملفات جانبية (واقعة نقوش ٤٣–٤٨). القياس: نقوش الحالة في أحدث حجم (مفكوكًا) مقابل نسخة العمل.
+# الاستثناء الوحيد: NAQSH_EXCEPTION="سبب معلن" (يُطبع في رسالة الختم).
+_naqsh_tmp="$(mktemp -d)"
+_naqsh_prev_vol="$(latest_by_time)"
+_naqsh_before=0
+if [ -n "$_naqsh_prev_vol" ]; then
+  openssl enc -d -aes-256-cbc -pbkdf2 -iter 600000 -salt -pass env:MIFTAH -in "$_naqsh_prev_vol" 2>/dev/null \
+    | tar -xz -C "$_naqsh_tmp" --wildcards '*العمل/الحالة.md' 2>/dev/null || true
+  _naqsh_before=$(grep -c '^## نقش' "$_naqsh_tmp/العمل/الحالة.md" 2>/dev/null || true)
+fi
+rm -rf "$_naqsh_tmp"
+case "$_naqsh_before" in ''|*[!0-9]*) _naqsh_before=0 ;; esac
+_naqsh_now=$(grep -c '^## نقش' 'القناة/العمل/الحالة.md' 2>/dev/null || true)
+case "$_naqsh_now" in ''|*[!0-9]*) _naqsh_now=0 ;; esac
+if [ "$_naqsh_now" -le "$_naqsh_before" ] && [ -z "${NAQSH_EXCEPTION:-}" ]; then
+  echo "رفض: الختم لا يزيد نقشًا في القناة/العمل/الحالة.md (السابق ${_naqsh_before} · الحالي ${_naqsh_now}) — أضف نقشك هناك، لا ملف جانبي." >&2
+  echo 'لسبب قاهر فقط: NAQSH_EXCEPTION="السبب" ثم أعد الختم.' >&2
+  exit 6
+fi
+[ -n "${NAQSH_EXCEPTION:-}" ] && echo "ختم بنقش استثنائي — السبب المعلن: ${NAQSH_EXCEPTION}"
 
 # ─── الاستدراك الداخلي عند تحرك البعيد (ق-٠٠٧/ب٢: لا يُترك للوكيل) ───
 # مزامنة ثلاثية بملف-ملف: أساس = آخر حجم قبل التحرك · منا = مجلد القناة · عنهم = أحدث حجم بعده.
@@ -246,7 +274,7 @@ while :; do
 
   bash scripts/فحص.sh
 
-  git add "$out"
+  git add "$out" scripts/  # الديمومة (علاج فقدان الإصلاحات): أدوات القناة تُرفق في كل ختم
   git commit -q -m "snapshot $nn" || {
     echo 'فشل الالتزام (تحقق من هوية جيت/الحالة المحلية)؛ حُجِم أي يتيم بالتنظيف التلقائي.' >&2
     exit 1

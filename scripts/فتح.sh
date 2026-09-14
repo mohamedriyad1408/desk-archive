@@ -44,15 +44,20 @@ fi
 
 # ق-٠٠٧/ب: الرقم ليس زمنًا — الأحدث التزامًا هو الحكم، والأعلى رقمًا يُفتح فقط عند التساوي.
 # تعادل الطوابع يحسم للأعلى رقمًا (ختمان في الثانية نفسها واردان).
-latest_by_time() {
+latest_by_time() { # علاج v-255 (اقتراح م٢ · تنفيذ م١): الكشف من كائنات git لا من ملفات العمل —
+  # ملفات العمل قد تكون متخلفة بعد استعادة لقطة فيُفتح/يُبنى على حجم قديم ويجتاز الحراس (واقعة v-255).
+  # المرجع HEAD في لحظة النداء: في فتح.sh بعد الدمج = البعيد؛ وفي ختم.sh قبل الدمج = آخر حالتي وبعده = البعيد.
   local f ct best=0 best_f=""
   while IFS= read -r f; do
-    ct="$(git log -1 --format=%ct -- "$f" 2>/dev/null || echo 0)"
+    ct="$(git log -1 --format=%ct HEAD -- "$f" 2>/dev/null || echo 0)"
     if [ "${ct:-0}" -ge "$best" ] && [ "${ct:-0}" -gt 0 ]; then best="$ct"; best_f="$f"; fi
-  done < <(ls -1 vault/v-*.enc 2>/dev/null | sort)
-  [ -n "$best_f" ] && { echo "$best_f"; return 0; }
-  return 1
+  done < <(git -c core.quotepath=false ls-tree --name-only HEAD -- vault/ 2>/dev/null | sort)
+  echo "$best_f"
 }
+
+# تجسيد الأحجام على القرص قبل الفك (علاج v-255): الكشف من كائنات git والملف قد يكون غائبًا من مجلد العمل.
+git checkout HEAD -- vault/ 2>/dev/null || true
+
 latest="$(latest_by_time)"
 if [ -z "$latest" ]; then
   echo 'لا توجد أحجام مشفّرة بعد؛ شغّل ختم.sh بعد تهيئة مجلد القناة.' >&2
