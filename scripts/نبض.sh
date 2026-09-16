@@ -121,7 +121,7 @@ norm_card() { # $1=دور $2=بطاقة ⇒ «دور-NNN» بأرقام غربي
   pfx="$(role_prefix "$role")"
   if [[ "$card" =~ ^[0-9]{3}$ ]]; then
     echo "${pfx}-${card}"
-  elif [[ "$card" == "${pfx}-"[0-9]{3} ]]; then
+  elif [[ "$card" =~ ^${pfx}-[0-9]{3}$ ]]; then
     echo "$card"
   else
     echo "خطأ: معرّف البطاقة يجب أن يكون ثلاثية غربية أو «${pfx}-NNN» (ق-٠٠٦): $card" >&2
