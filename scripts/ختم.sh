@@ -11,6 +11,29 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
+# خ-٧ (اعتماد م١ ٢٠٢٦-٠٩-١٨): قفل تسلسل الختم — منع واقعة v-305/306 (ختمان متزامنان محا أحدهما الآخر).
+LOCK_HASH="$(printf '%s' "$PWD" | md5sum 2>/dev/null | cut -c1-12 || printf '%s' "$PWD" | cksum | cut -d' ' -f1)"
+LOCK_FILE="${TMPDIR:-/tmp}/desk-archive-seal-${LOCK_HASH:-nolock}.lock"
+if command -v flock >/dev/null 2>&1; then
+  exec 9>"$LOCK_FILE"
+  if ! flock -n 9; then
+    echo 'مرفوض: ختم آخر جارٍ على نفس نسخة القناة (قفل التسلسل خ-٧) — انتظر انتهاءه ثم أعد.' >&2
+    exit 8
+  fi
+else
+  LOCK_DIR="${LOCK_FILE}.d"
+  if ! mkdir "$LOCK_DIR" 2>/dev/null; then
+    other="$(cat "$LOCK_DIR/pid" 2>/dev/null || true)"
+    if [ -n "$other" ] && kill -0 "$other" 2>/dev/null; then
+      echo "مرفوض: ختم آخر جارٍ (العملية $other) على نفس نسخة القناة (قفل التسلسل خ-٧) — انتظر ثم أعد." >&2
+      exit 8
+    fi
+    rm -rf "$LOCK_DIR"; mkdir "$LOCK_DIR" 2>/dev/null || { echo 'مرفوض: تعذر القفل (خ-٧).' >&2; exit 8; }
+  fi
+  echo $$ > "$LOCK_DIR/pid"
+  trap 'rm -rf "$LOCK_DIR"' EXIT
+fi
+
 if [ -z "${MIFTAH:-}" ]; then
   read -rsp 'مفتاح الفك: ' MIFTAH
   echo

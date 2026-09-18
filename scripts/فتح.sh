@@ -91,6 +91,21 @@ else
   extras=""
 fi
 
+# خ-٧ (اعتماد م١ ٢٠٢٦-٠٩-١٨): لا يمحو تحرير القناة — تحرير محلي غير مدفوع يوقف الاستخراج
+# (نسخة احتياطية تُؤخذ دائمًا عند وجوده؛ والتجاوز المتعمد بـ OPEN_FORCE=1 بعد الدفع).
+# القناة/ غير متعقَّبة في جيت (المحتوى يُختم في vault/ مشفَّرًا) — فيُقاس التحرير بمقارنة المحتوى
+# مع اللقطة المنزوعة من آخر حجم: ملفات مشتركة تختلف ⇒ تحرير لم يُختم بعد.
+dirty="$(diff -rq "$tmp" القناة 2>/dev/null | grep -aE '^Files .* differ$' || true)"
+if [ -n "$dirty" ]; then
+  backup_dir="${TMPDIR:-/tmp}/desk-archive-local-backups"; mkdir -p "$backup_dir"
+  backup="$backup_dir/القناة-$(date -u +%Y%m%dT%H%M%SZ).tar.gz"
+  tar czf "$backup" القناة 2>/dev/null || true
+  echo "تحذير (خ-٧): في القناة/ تحرير محلي غير مدفوع ($(printf '%s\n' "$dirty" | grep -c .) سطرًا) — نسخة احتياطية: $backup"
+  if [ "${OPEN_FORCE:-0}" != 1 ]; then
+    echo 'الاستخراج لن يمحو تحريرك: ادفعه (ختم.sh) ثم أعد، أو شغّله بـ OPEN_FORCE=1 بعد أخذ النسخة الاحتياطية.' >&2
+    exit 7
+  fi
+fi
 mkdir -p القناة
 cp -a "$tmp"/. القناة/
 
