@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """مسبر ب٩ — معيد إنتاج الدلتا (ن-082). استدعاء: python3 مسبر-ب9.py"""
-import json, subprocess, sys, os, shutil, hashlib
+import json, subprocess, sys, os, shutil, hashlib, tempfile
 D = os.path.dirname(os.path.abspath(__file__)); REF = os.path.join(D, "مرجع-مُعِيد-الدلتا.py")
-SB = "/var/tmp/مسبر-الدلتا"; shutil.rmtree(SB, ignore_errors=True); os.makedirs(SB)
+SB = os.path.join(os.environ.get("PROBE_SB", tempfile.gettempdir()), "مسبر-الدلتا")
+shutil.rmtree(SB, ignore_errors=True); os.makedirs(SB)
 P = F = 0
 def ok(m): global P; P += 1; print(f"  ✅ {m}")
 def no(m): global F; F += 1; print(f"  ❌ {m}")

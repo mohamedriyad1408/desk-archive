@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """مسبر ب١٧ — بوابة العموم والحرفية (ن-082). استدعاء: python3 مسبر-ب17.py"""
-import subprocess, sys, os, shutil, re
+import subprocess, sys, os, shutil, re, tempfile
 D = os.path.dirname(os.path.abspath(__file__)); REF = os.path.join(D, "لينتر-العموم.py")
-SB = "/var/tmp/مسبر-العموم"; shutil.rmtree(SB, ignore_errors=True); os.makedirs(SB)
+ROOT = os.environ.get("REPO") or os.path.dirname(D)          # جذر المستودع من موضع السكربت — صفر مسار ثابت
+if "--repo" in sys.argv: ROOT = sys.argv[sys.argv.index("--repo") + 1]
+SB = os.path.join(os.environ.get("PROBE_SB", tempfile.gettempdir()), "مسبر-العموم")
+shutil.rmtree(SB, ignore_errors=True); os.makedirs(SB)
 P = F = 0
 def ok(m): global P; P += 1; print(f"  ✅ {m}")
 def no(m): global F; F += 1; print(f"  ❌ {m}")
@@ -100,7 +103,10 @@ if rc == 1 and all(f"GPC{i}" in out for i in range(1, 5)) and "فشل مغلق" 
 else: no(f"cold-start kills: rc={rc} {out.strip()[:200]}")
 
 print("◆ قياس حقيقي على R2 (الفشل مقصود ومعلن — التنظيف عند ق)")
-R2 = "/var/tmp/desk-archive/القناة/العمل/الدستور-٣٫٠-مسودة-R2-بعد-المراجعات-2026-09-29.md"
+R2 = os.path.join(ROOT, "القناة/العمل/الدستور-٣٫٠-مسودة-R2-بعد-المراجعات-2026-09-29.md")
+if not os.path.isfile(R2):
+    print(f"  ⛔ [عطل بنيوي — رمز ٧٠] R2 غير موجود: {R2} (لا يُحتسب ضمن القتلات ولا النجاح — fail-closed)", file=sys.stderr)
+    sys.exit(70)
 if os.path.exists(R2):
     rc, out = py("gate", R2)
     aggs = dict(re.findall(r"^\s{2}([a-z_]+)\(core\)=(\d+)", out, re.M))

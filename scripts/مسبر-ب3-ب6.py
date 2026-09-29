@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """مسبر ب٣–ب٦ (نقطة منتصف ن-082) — قتلات المخططات بأرقامها. استدعاء: python3 مسبر-ب3-ب6.py"""
-import json, subprocess, sys, os, shutil, copy
+import json, subprocess, sys, os, shutil, copy, tempfile
 D = os.path.dirname(os.path.abspath(__file__))
 REF = os.path.join(D, "مرجع-مخططات-النواة.py")
-SB = "/var/tmp/مسبر-مخططات"
+SB = os.path.join(os.environ.get("PROBE_SB", tempfile.gettempdir()), "مسبر-مخططات")
 shutil.rmtree(SB, ignore_errors=True); os.makedirs(SB)
 
 P = F = 0
