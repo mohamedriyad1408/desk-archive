@@ -3,6 +3,7 @@
 # الجذر من موضع السكربت أو --repo/$REPO · صفر مسار بيئة ثابت · بيئة الفحص من PROBE_SB/TMPDIR.
 # عطل البنية التحتية = رمز خروج 70، ولا يُحتسب ضمن قتلات LX ولا ضمن نجاحها (fail-closed مسبب).
 set -uo pipefail
+SELF="$(realpath "${BASH_SOURCE[0]}" 2>/dev/null || readlink -f "${BASH_SOURCE[0]}")"   # ن-084: مسار ذاتي مطلق قبل أي cd
 D="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="${REPO:-$(cd "$D/.." && pwd)}"
 R2NAME="${R2_NAME:-الدستور-٣٫٠-مسودة-R2-بعد-المراجعات-2026-09-29.md}"
@@ -76,6 +77,6 @@ done
 echo; echo "════ الحصيلة: نجح $PASS · فشل $FAIL ════"
 echo "◆ عطل بنيوي (منفصل — لا يُحتسب ضمن الـ١١): جذر غائب يجب أن يُفشل مغلقًا برمز ٧٠"
 IERR="${SB}.infra.err"
-bash "$0" --repo "$SB/لا-يوجد-هذا-الجذر" >/dev/null 2>"$IERR"; irc=$?
+bash "$SELF" --repo "$SB/لا-يوجد-هذا-الجذر" >/dev/null 2>"$IERR"; irc=$?
 if [ $irc -eq 70 ] && grep -q 'عطل بنيوي' "$IERR"; then echo "  ✅ فشل مغلق برمز ٧٠ مع رسالة مسببة"; else echo "  ❌ العطل البنيوي لم يُرمز ٧٠ (rc=$irc)"; INFRA_OK=0; fi
 [ $FAIL -eq 0 ] && [ $INFRA_OK -eq 1 ] || exit 1
