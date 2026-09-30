@@ -112,23 +112,30 @@ next_free_number() { # أعلى المحلي والبعيد معًا + ١ (ق-٠
   [ "$lv" -ge "$rv" ] && echo $((lv+1)) || echo $((rv+1))
 }
 
-# ─── حارس النقوش (م١ ج11 — أُعيد بناؤه ديّمًا بعد واقعة الفقد): كل ختم يزيد نقشًا في الحالة نفسها ───
+# ─── حارس النقوش (م١ ج11 — أُعيد بناؤه ديّمًا بعد واقعة الفقد): كل ختم يزيد نقشًا في السجل ───
 # يمنع تجزئة السجل في ملفات جانبية (واقعة نقوش ٤٣–٤٨). القياس: نقوش الحالة في أحدث حجم (مفكوكًا) مقابل نسخة العمل.
+# ن-086/ب٨ (فصل الحالة/الأرشيف): بعد الفصل الموثق يحمل الأرشيف النقوش المُرحَّلة، فالقياس على
+# «الفعّال» = نقوش الحالة + نقوش أرشيف-النقوش-٢٠٢٦.md (الاثنان معًا) — فالحراسة تبقى على المجموع ولا تُعطَّل.
 # الاستثناء الوحيد: NAQSH_EXCEPTION="سبب معلن" (يُطبع في رسالة الختم).
 _naqsh_tmp="$(mktemp -d)"
 _naqsh_prev_vol="$(latest_by_time)"
 _naqsh_before=0
+_arch_before=0
 if [ -n "$_naqsh_prev_vol" ]; then
   openssl enc -d -aes-256-cbc -pbkdf2 -iter 600000 -salt -pass env:MIFTAH -in "$_naqsh_prev_vol" 2>/dev/null \
-    | tar -xz -C "$_naqsh_tmp" --wildcards '*العمل/الحالة.md' 2>/dev/null || true
+    | tar -xz -C "$_naqsh_tmp" --wildcards '*العمل/الحالة.md' '*العمل/أرشيف-النقوش-٢٠٢٦.md' 2>/dev/null || true
   _naqsh_before=$(grep -c '^## نقش' "$_naqsh_tmp/العمل/الحالة.md" 2>/dev/null || true)
+  _arch_before=$(grep -c '^## نقش' "$_naqsh_tmp/العمل/أرشيف-النقوش-٢٠٢٦.md" 2>/dev/null || true)
 fi
 rm -rf "$_naqsh_tmp"
 case "$_naqsh_before" in ''|*[!0-9]*) _naqsh_before=0 ;; esac
+case "$_arch_before" in ''|*[!0-9]*) _arch_before=0 ;; esac
 _naqsh_now=$(grep -c '^## نقش' 'القناة/العمل/الحالة.md' 2>/dev/null || true)
 case "$_naqsh_now" in ''|*[!0-9]*) _naqsh_now=0 ;; esac
-if [ "$_naqsh_now" -le "$_naqsh_before" ] && [ -z "${NAQSH_EXCEPTION:-}" ]; then
-  echo "رفض: الختم لا يزيد نقشًا في القناة/العمل/الحالة.md (السابق ${_naqsh_before} · الحالي ${_naqsh_now}) — أضف نقشك هناك، لا ملف جانبي." >&2
+_arch_now=$(grep -c '^## نقش' 'القناة/العمل/أرشيف-النقوش-٢٠٢٦.md' 2>/dev/null || true)
+case "$_arch_now" in ''|*[!0-9]*) _arch_now=0 ;; esac
+if [ $((_naqsh_now + _arch_now)) -le $((_naqsh_before + _arch_before)) ] && [ -z "${NAQSH_EXCEPTION:-}" ]; then
+  echo "رفض: الختم لا يزيد نقشًا في السجل الفعّال (السابق ${_naqsh_before}+${_arch_before} · الحالي ${_naqsh_now}+${_arch_now}) — أضف نقشك في الحالة، لا ملف جانبي." >&2
   echo 'لسبب قاهر فقط: NAQSH_EXCEPTION="السبب" ثم أعد الختم.' >&2
   exit 6
 fi
@@ -253,7 +260,8 @@ buried_report="$work/buried.list"
 while IFS= read -r rel; do
   [ -f "القناة/$rel" ] || continue
   if ! cmp -s "$tmp/$rel" "القناة/$rel"; then
-    gone="$(comm -23 <(grep -E '^#{2,6} ' "$tmp/$rel" | sort -u) <(grep -E '^#{2,6} ' "القناة/$rel" | sort -u) || true)"
+    # ن-086/ب٨: للحالة.md، عنوان انتقل إلى أرشيف-النقوش (الجزء الموثق) ليس مدفونًا — النطاق يضم الأرشيف.
+    gone="$(comm -23 <(grep -E '^#{2,6} ' "$tmp/$rel" | sort -u) <( { grep -E '^#{2,6} ' "القناة/$rel"; [ "$rel" = "العمل/الحالة.md" ] && [ -f "القناة/العمل/أرشيف-النقوش-٢٠٢٦.md" ] && grep -E '^#{2,6} ' "القناة/العمل/أرشيف-النقوش-٢٠٢٦.md"; } | sort -u) || true)"
     if [ -n "$gone" ]; then
       echo "$rel" >> "$buried_report"
       printf '%s\n' "$gone" | sed "s#^#    عنوان مدفون: #" >&2
@@ -270,7 +278,7 @@ if [ -s "$buried_report" ]; then
     mkdir -p "$(dirname "$bury_manifest")"
     [ -f "$bury_manifest" ] || printf '# دفن موثق — يملؤه سكربت الختم بإذن ALLOW_BURY=1\n# الصيغة: رقم الحجم <TAB> المسار <TAB> العناوين المدفونة\n' > "$bury_manifest"
     while IFS= read -r rel; do
-      gone="$(comm -23 <(grep -E '^#{2,6} ' "$tmp/$rel" | sort -u) <(grep -E '^#{2,6} ' "القناة/$rel" | sort -u) | tr '\n' '؛')"
+      gone="$(comm -23 <(grep -E '^#{2,6} ' "$tmp/$rel" | sort -u) <( { grep -E '^#{2,6} ' "القناة/$rel"; [ "$rel" = "العمل/الحالة.md" ] && [ -f "القناة/العمل/أرشيف-النقوش-٢٠٢٦.md" ] && grep -E '^#{2,6} ' "القناة/العمل/أرشيف-النقوش-٢٠٢٦.md"; } | sort -u) | tr '\n' '؛')"
       printf '%s\t%s\t%s\n' "$n" "$rel" "$gone" >> "$bury_manifest"
     done < "$buried_report"
   else
@@ -297,7 +305,9 @@ while :; do
 
   bash scripts/فحص.sh
 
-  git add "$out" scripts/  # الديمومة (علاج فقدان الإصلاحات): أدوات القناة تُرفق في كل ختم
+  # ن-086/ب٣ (ق-٠١٠): --sparse تلزم للاستنساخ الجزئي (بلاها تُهمل الإضافة بصمت تحت sparse-checkout)
+  # وعديمة الأثر على المخروط الكامل — مقيس في العمل/قياس-الاستنساخ-الجزئي-٢٠٢٦-٠٩-٣٠.md
+  git add --sparse "$out" scripts/  # الديمومة (علاج فقدان الإصلاحات): أدوات القناة تُرفق في كل ختم
   git commit -q -m "snapshot $nn" || {
     echo 'فشل الالتزام (تحقق من هوية جيت/الحالة المحلية)؛ حُجِم أي يتيم بالتنظيف التلقائي.' >&2
     exit 1
