@@ -1,4 +1,6 @@
 name: guard
+# ن-089/ب (خلاف-٤ · ق-٠١٠): fetch-depth: 0 — فحص الازدواج التاريخي في scripts/فحص.sh
+# يقرأ تاريخ الفرعة كله (git rev-list)؛ والافتراضي (1) كان يجعل فحص CI أضيق من المحلي.
 on:
   push:
     paths-ignore:
@@ -9,5 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: plaintext scan
         run: bash scripts/فحص.sh
