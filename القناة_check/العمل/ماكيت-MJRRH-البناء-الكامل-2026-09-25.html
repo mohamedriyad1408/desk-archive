@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MJRRH — ماكيت البناء الكامل</title>
+<style>
+  :root{
+    --primary:#3E4F63; --accent:#00BDDB; --light:#C2C7CD; --light2:#D6D9DE;
+    --ink:#2B3846; --warn:#B7791F; --ok:#2F855A; --bg:#F7F9FA;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+       font-family:"Tajawal","Cairo","Segoe UI",Tahoma,system-ui,sans-serif;line-height:1.7}
+  header{background:var(--primary);color:#fff;padding:22px 26px 16px}
+  header .brand{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  header .wm{font-weight:900;font-size:30px;letter-spacing:2px}
+  header .wm span{color:var(--accent)}
+  header .sub{font-size:13px;letter-spacing:3px;color:#D6D9DE}
+  header .meta{margin-top:10px;font-size:13px;color:#C2C7CD}
+  nav{display:flex;gap:6px;flex-wrap:wrap;background:#fff;padding:10px 20px;border-bottom:1px solid var(--light2);position:sticky;top:0;z-index:5}
+  nav button{border:1px solid var(--light2);background:#fff;color:var(--primary);font:inherit;font-weight:700;
+             padding:8px 14px;border-radius:999px;cursor:pointer}
+  nav button.on{background:var(--primary);color:#fff;border-color:var(--primary)}
+  nav button:hover{border-color:var(--accent)}
+  main{max-width:1080px;margin:0 auto;padding:22px 18px 80px}
+  section{display:none}
+  section.on{display:block}
+  h2{color:var(--primary);font-size:22px;margin:6px 0 14px;border-right:5px solid var(--accent);padding-right:10px}
+  h3{color:var(--primary);font-size:17px;margin:18px 0 8px}
+  .card{background:#fff;border:1px solid var(--light2);border-radius:14px;padding:16px 18px;margin:10px 0}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+  .chip{display:inline-block;background:#EAF9FC;color:#0B5B6B;border:1px solid #B9E8F1;
+        border-radius:999px;padding:3px 10px;font-size:13px;margin:2px}
+  .tier{border-right:5px solid var(--accent)}
+  .tier.b{border-right-color:var(--primary)}
+  .tier.c{border-right-color:var(--light)}
+  table{width:100%;border-collapse:collapse;background:#fff;border-radius:12px;overflow:hidden}
+  th,td{border:1px solid var(--light2);padding:8px 10px;text-align:right;font-size:14px;vertical-align:top}
+  th{background:var(--primary);color:#fff;font-weight:700}
+  tr:nth-child(even) td{background:#FBFDFE}
+  .lvl{display:flex;align-items:center;gap:10px;margin:6px 0}
+  .lvl .n{width:34px;height:34px;border-radius:10px;background:var(--primary);color:#fff;display:flex;
+          align-items:center;justify-content:center;font-weight:800;flex:0 0 auto}
+  .lvl .t{background:#fff;border:1px solid var(--light2);border-radius:10px;padding:8px 12px;flex:1}
+  .arrow{color:var(--accent);font-weight:900;text-align:center;line-height:1}
+  .note{background:#FFFBEA;border:1px solid #F1E3B3;border-radius:12px;padding:12px 14px;font-size:14px}
+  .ok{background:#F0FBF4;border-color:#BFE8D0}
+  .danger{background:#FFF5F5;border-color:#F3C5C5}
+  footer{color:#6B7A88;font-size:12px;text-align:center;padding:18px}
+  .k{font-weight:800;color:var(--primary)}
+  ul{margin:6px 0 6px 0;padding-inline-start:20px}
+  li{margin:3px 0}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .tag{font-size:12px;background:var(--light2);border-radius:6px;padding:2px 7px;color:#4A5A69}
+</style>
+</head>
+<body>
+<div dir="rtl" style="position:sticky;top:0;z-index:99999;background:#7f1d1d;color:#fff;font:600 16px/1.7 system-ui,-apple-system,Segoe UI,Tahoma,sans-serif;padding:10px 16px;text-align:center">⛔ مسحوب بأمر المالك (٢٧/٠٩/٢٠٢٦): «نسحبه» — يُحفظ للسجل، ولا يُبنى عليه ولا يُعرض.</div>
+
+<header>
+  <div class="brand">
+    <div class="wm">MJ<span>RR</span>H</div>
+    <div>
+      <div class="sub">INDUSTRIAL REVOLUTION</div>
+      <div style="font-size:14px;color:#fff">ماكيت البناء الكامل — الخريطة التي يُبنى عليها، ويُصان بها</div>
+    </div>
+  </div>
+  <div class="meta">٢٥/٠٩/٢٠٢٦ · ألوان الهوية المعتمدة من اللوجو: <span class="chip">#3E4F63</span><span class="chip">#00BDDB</span><span class="chip">#C2C7CD</span><span class="chip">#D6D9DE</span></div>
+</header>
+
+<nav id="nav"></nav>
+
+<main>
+  <!-- ١ -->
+  <section id="s1" class="on">
+    <h2>النظرة الكبرى — سلسلة البناء في أحد عشر مستوى</h2>
+    <p>هذه هي سلسلة نموذجك كما ورد في شرحك، مرتَّبة كما تُبنى فعلًا: من النية إلى التغذية الراجعة.</p>
+    <div id="levels"></div>
+    <div class="note">قاعدة القراءة: <b>كل مستوى يجيب سؤالًا واحدًا</b> — والبناء يسير من أعلى إلى أسفل، والصيانة تقرأ من أسفل إلى أعلى.</div>
+  </section>
+
+  <!-- ٢ -->
+  <section id="s2">
+    <h2>النوى الخمسون — ثلاث طبقات لا واحدة</h2>
+    <p>هذا أهم قرار في الخريطة: <b>الـ٥١ نواة لا تُبنى إحدى وخمسين مرة</b>. وهي تنقسم عندنا ثلاثًا، والقسمة موافقة لممارسة تصنيف القدرات المعيارية (تشغيلية + إدارة ودعم + امتدادات قطاعية).</p>
+    <div class="grid">
+      <div class="card tier">
+        <h3>الطبقة الأولى — نوى تُبنى هندسيًا <span class="tag">٢٤ نواة</span></h3>
+        <p>البنية الثقيلة التي تعمل كل يوم: المحاسبة والمالية والتسعير والتكلفة والإيراد · المخزون والمشتريات والإنتاج والجودة والتوصيل والتشغيل والسلاسل والمرافق · البيع والتسويق والمبيعات وخدمة العملاء والاتصالات · الموارد البشرية · الأمن السيبراني والتكامل · الأمان · التقارير · الفِنْتك.</p>
+        <div id="t1"></div>
+      </div>
+      <div class="card tier b">
+        <h3>الطبقة الثانية — نوى معرفية تُبنى مرة وتغني الجميع <span class="tag">١٥ نواة</span></h3>
+        <p>محرّكات العقل: الإدارة الاستراتيجية والقيادة وريادة الأعمال · تحليلات الأعمال والذكاء الاصطناعي والتحول الرقمي · الامتثال والقانونية والمخاطر · الذكاء والمعرفة والابتكار والخيال التجاري والدراسات التحويلية والاستدامة والحوكمة البيئية. <b>تُبنى مرة واحدة، ويستعملها الموظف الخارق في كل نواة.</b></p>
+        <div id="t2"></div>
+      </div>
+      <div class="card tier c">
+        <h3>الطبقة الثالثة — عدسات قطاعية تُفتح عند الحاجة <span class="tag">١٢ عدسة</span></h3>
+        <p>ليست أنظمة مستقلة، بل <b>معرفة وأسئلة ومعايير واستمارات</b> تُلبَس لعميل القطاع: الصحة · الضيافة · البنوك · العقارات · الأعمال الدولية · السياحة · الزراعة · تكنولوجيا الأغذية · الطاقة · الرياضات الإلكترونية · الرياضة · تنظيم المرافق العامة.</p>
+        <div id="t3"></div>
+      </div>
+    </div>
+    <div class="note ok">القاعدة البنائية: <b>طبقة تُبنى + طبقة تُستعمل + عدسات تُفتح</b> — وبذلك يستوعب النظام الخمسين نواة بلا خمسين بناء.</div>
+  </section>
+
+  <!-- ٣ -->
+  <section id="s3">
+    <h2>الرحلات السبع عشرة — القيمة كما تمر فعلًا</h2>
+    <div class="grid">
+      <div class="card"><h3>رحلات أساسية (٤)</h3><div id="j1"></div></div>
+      <div class="card"><h3>رحلات تشغيلية (٤)</h3><div id="j2"></div></div>
+      <div class="card"><h3>رحلات داعمة (٥)</h3><div id="j3"></div></div>
+      <div class="card"><h3>رحلات متخصصة (٤)</h3><div id="j4"></div></div>
+    </div>
+    <div class="note">كل رحلة: <b>محطات · لكل محطة مدخلات ومخرجات ومعيار قبول ونتيجة قابلة للقياس · ولكل محطة دور</b> — والاختناق يُقاس على المحطة بانحرافها عن الطبيعي.</div>
+  </section>
+
+  <!-- ٤ -->
+  <section id="s4">
+    <h2>شاشات المنصة — ما يراه كل إنسان</h2>
+    <table>
+      <tr><th>المحطة</th><th>مَن يراها</th><th>ماذا تفعل</th></tr>
+      <tr><td>بوابات الدخول الثلاث</td><td>أي صاحب نشاط</td><td>من أنت ← ناشئة أم قائمة ← أين تقف اليوم وإلى أين تريد</td></tr>
+      <tr><td>لوحة «ماذا يلزمك الآن»</td><td>صاحب النشاط</td><td>حركة اليوم أولًا، والأرقام تحتها</td></tr>
+      <tr><td>أبواب العمل</td><td>صاحب النشاط وأدواره</td><td>بيع وكاشير · مخزون · مشتريات · إيرادات ومصروفات · عملاء · رحلات ومحطات · مؤشرات · اختناقات</td></tr>
+      <tr><td>الإعدادات</td><td>صاحب النشاط</td><td>الفريق · الأبواب تُفتح وتُوقف بلا محو · الضرائب · الفِنْتك · القانونية · الذكاء · طبقات المعرفة · الكيان والفروع</td></tr>
+      <tr><td>الموظف الخارق</td><td>كل من يحمل هاتفًا أو حاسوبًا</td><td>دورك · مهامك ١ ٢ ٣ ٤ · ما المقابل غلط الآن · أين الاختناق</td></tr>
+      <tr><td>القنوات</td><td>الجميع</td><td>الوظيفة واحدة: هاتف · لابتوب · تابلت · نافذة ويندوز — والوسيط حرّ</td></tr>
+    </table>
+    <div class="note">تحت كل باب: <b>نواته المعرفية</b> (معيار · مصدر · تاريخ مراجعة) و<b>أسئلته</b> تُفتح بمراحل بحسب حجم النشاط — فلا استمارة ضخمة عند الدخول.</div>
+  </section>
+
+  <!-- ٥ -->
+  <section id="s5">
+    <h2>خطة البناء — حتى ٣٠/٠٩ وما بعده</h2>
+    <div class="note danger"><b>الحساب الصريح:</b> خمسة أيام لا تكفي لبناء ٥١ نواة و١٧ رحلة بمعيارك. فالخيار واحد من ثلاثة أمامك (في ورقة الموعد): نطاق «محل واحد يعمل فعلًا» · أو تأجيل قليل مقابل «كل شيء قبل الإطلاق» · أو ماكيت حي بلا عميل. <b>الخطة أدناه تفترض الخيار الأول، والقرار لك في «أساس البناء».</b></div>
+    <table>
+      <tr><th>اليوم</th><th>المخرج</th><th>معيار القبول</th></tr>
+      <tr><td>١ — ٢٦/٠٩</td><td>الأساس: مساحات GitHub + Supabase + Vercel · الهوية مطبّقة في الكود · مخطط البيانات · المستأجر والأدوار · سجل التدقيق</td><td>إنشاء مستأجر جديد، ودخول، وسجل تدقيق يعمل — بلا أي بيانات يدوية</td></tr>
+      <tr><td>٢ — ٢٧/٠٩</td><td>العمود التشغيلي: بيع وكاشير · مخزون · إيرادات ومصروفات · القيد المحاسبي التلقائي</td><td>عملية بيع حقيقية تُحرّك المخزون والدرج والدفتر معًا</td></tr>
+      <tr><td>٣ — ٢٨/٠٩</td><td>رحلة المستخدم: البوابات الثلاث · توليد الأبواب · لوحة «ماذا يلزمك الآن» · الإعدادات تفتح وتوقف</td><td>نشاط جديد يدخل بنفسه ويعمل بلا أحد منّا</td></tr>
+      <tr><td>٤ — ٢٩/٠٩</td><td>الموظف الخارق (نسخة أولى) + مؤشران مقيسان + اختناق حقيقي واحد + بوابة القرار الداخلي</td><td>لا توصية تظهر إلا مع شهادة قياسها</td></tr>
+      <tr><td>٥ — ٣٠/٠٩</td><td>التسليم: عميل حقيقي يعمل · نسخ احتياطي · فحوص خروج · دليل استخدام بسيط</td><td>عميل حقيقي يشغّل نظامه ويكسب — بلا تدخلنا</td></tr>
+      <tr><td>ما بعد ٣٠/٠٩</td><td>خط إنتاج أسبوعي معلن: نوى تتبع نوى · عدسات قطاعات · تعميق المعرفة · الويندوز</td><td>موجة أسبوعية: زيادة معلنة قابلة للقياس في كل جمعة</td></tr>
+    </table>
+  </section>
+
+  <!-- ٦ -->
+  <section id="s6">
+    <h2>الصيانة — كيف تعمل هذه الخريطة مرجعًا حيًّا</h2>
+    <ul>
+      <li><b>لكل نواة مالك واحد:</b> مَن يعدّلها ومَن يراجعها — والاسم مكتوب لا مفهوم.</li>
+      <li><b>لكل نواة نسخة وبصمة:</b> يُعرف ما تغيّر ومتى وبأمر مَن — ومن هنا يُعاد الترقية بموجة واحدة للجميع (مقيسة عندنا).</li>
+      <li><b>لكل نواة بواباتها:</b> لا تدخل تغييراتها إلى الجميع إلا بعد فحصها — و«كل قرار اختُبر داخليًا قبل أن يظهر».</li>
+      <li><b>الإيقاف بلا محو:</b> تُوقف النواة وتبقى بياناتها، وإعادة التنشيط تُعيد الشاشات كما كانت.</li>
+      <li><b>خريطة الاعتماديات:</b> أي نواة تعتمد على غيرها مكتوب — فلا يُوقف جزء يكسر غيره.</li>
+      <li><b>القراءة العكسية:</b> إذا ظهر اختناق في التشغيل نرجع من المستوى السابع إلى الأول في هذه الخريطة حتى نجده.</li>
+    </ul>
+    <div class="note ok">هذه الخريطة تُحدَّث بفعل البناء: كل نواة تُبنى تتحول من <b>مخطَّط</b> إلى <b>عامل مُقاس</b> — فتبقى مرجعًا حيًّا لا وثيقة أرشيف.</div>
+  </section>
+</main>
+
+<footer>MJRRH — ماكيت البناء · بقلم م١ · ٢٠٢٦-٠٩-٢٥ · الألوان معتمدة من اللوجو الرسمي</footer>
+
+<script>
+const tabs=[["s1","النظرة الكبرى"],["s2","النوى ٥١"],["s3","الرحلات ١٧"],["s4","الشاشات"],["s5","الخطة"],["s6","الصيانة"]];
+const nav=document.getElementById('nav');
+tabs.forEach(([id,t],i)=>{const b=document.createElement('button');b.textContent=t;b.className=i===0?'on':'';
+ b.onclick=()=>{document.querySelectorAll('nav button').forEach(x=>x.classList.remove('on'));b.classList.add('on');
+ document.querySelectorAll('section').forEach(s=>s.classList.remove('on'));document.getElementById(id).classList.add('on');window.scrollTo({top:0});};
+ nav.appendChild(b);});
+
+const levels=[["١","النية الاستراتيجية — لماذا نبني: عيون يرى بها صاحب المنشأة مشروعه كمنظومة"],
+["٢","النوى (القدرات) — ماذا نستطيع: أبواب تُفتح وتُغلق حسب النشاط"],
+["٣","الرحلات — كيف تُخلق القيمة: ١٧ رحلة تمر بالمنظومة"],
+["٤","النتائج — ماذا نريد في كل مرحلة: نتيجة قابلة للقياس لكل محطة"],
+["٥","المعلومات — ما ينتقل بين المحطات: كائنات موثّقة قابلة للتدقيق"],
+["٦","المقاييس — كيف نقيس: مؤشرات تولد من البيانات لا تُفرض"],
+["٧","الأدوار — من المسؤول: الفاعل شخص، والدور مسؤولية، والشخص يحمل أدوارًا"],
+["٨","المحطات — أين يحدث: مدخلات ومخرجات ومعيار قبول ونتيجة ومقياس"],
+["٩","الممكّنات — ما يجعل ذلك قابلًا: التقنية والثقافة والملكية"],
+["١٠","الحماية — كيف نحمي: حوكمة ومخاطر وامتثال"],
+["١١","التغذية الراجعة — كيف تتعلم المنظومة: قياس ← تعلّم ← تعديل ← تحسين"]];
+document.getElementById('levels').innerHTML=levels.map((l,i)=>
+ `<div class="lvl"><div class="n">${l[0]}</div><div class="t">${l[1]}</div></div>`+
+ (i<10?'<div class="arrow">▼</div>':'')).join('');
+
+const t1=["المحاسبة","المالية","التسعير","التكلفة","الإيراد","المخزون","المشتريات","الإنتاج","الجودة","التوصيل","التشغيل","سلاسل الإمداد","البنية التحتية","البيع","التسويق","المبيعات","خدمة العملاء","الاتصالات","الموارد البشرية","الأمن السيبراني","التكامل","الأمان","التقارير","الفِنْتك"];
+const t2=["الإدارة الاستراتيجية","القيادة التنظيمية","ريادة الأعمال","تحليلات الأعمال","الذكاء الاصطناعي","التحول الرقمي","الامتثال","القانونية","المخاطر","الذكاء","المعرفة","الابتكار","الخيال التجاري","الدراسات التحويلية","الاستدامة والحوكمة البيئية"];
+const t3=["إدارة الرعاية الصحية","إدارة الضيافة","إدارة البنوك","العقارات التجارية","الأعمال الدولية","السياحة الذكية","الأعمال الزراعية","تكنولوجيا الأغذية","الطاقة والاستدامة","الرياضات الإلكترونية","إدارة الرياضة","تنظيم المرافق العامة"];
+const chips=a=>a.map(x=>`<span class="chip">${x}</span>`).join('');
+document.getElementById('t1').innerHTML=chips(t1);document.getElementById('t2').innerHTML=chips(t2);document.getElementById('t3').innerHTML=chips(t3);
+
+const J=[["j1",["رحلة العميل — من الوعي إلى ما بعد الخدمة","رحلة الطلب — من إنشائه إلى إغلاقه","رحلة المنتج — من المادة الخام إلى الناتج","رحلة الخدمة — من الطلب إلى التنفيذ"]],
+["j2",["رحلة التشغيل — من البدء إلى الانتهاء","رحلة التوريد — من طلب المورد إلى الاستلام","رحلة التسليم — من التجهيز إلى الوصول","رحلة الجودة — من الفحص الأولي إلى الاعتماد"]],
+["j3",["رحلة التسويق — من الحملة إلى قياس النتيجة","رحلة المبيعات — من عميل محتمل إلى إتمام البيع","رحلة الموارد البشرية — من التوظيف إلى إنهاء الخدمة","رحلة الإيراد — من التقدير إلى التحصيل","رحلة التكلفة — من التقدير إلى احتساب الربح"]],
+["j4",["رحلة الابتكار — من الفكرة إلى الإطلاق","رحلة المخاطر — من التحديد إلى التخفيف","رحلة المعرفة — من الاكتساب إلى التطبيق","رحلة التحول الرقمي — من التشخيص إلى التبني"]]];
+J.forEach(([id,arr])=>document.getElementById(id).innerHTML="<ul>"+arr.map(x=>`<li>${x}</li>`).join("")+"</ul>");
+</script>
+</body>
+</html>

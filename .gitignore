@@ -3,3 +3,5 @@
 *.tmp
 .watch-*
 .pulse-*
+__pycache__/
+*.pyc
