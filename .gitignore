@@ -5,3 +5,5 @@
 .pulse-*
 __pycache__/
 *.pyc
+القناة_check/
+*_check/
